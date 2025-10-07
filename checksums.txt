@@ -1,0 +1,2 @@
+cfa67bbd4ac5c7dc0da2f4c9744ae0317c92ab965dddcf9bd1db03f3b4d00c9d  ZapretProxySetup.exe
+95b48d8d6c7168794e2d0eb81bc0831a78f553efe4154da69dd795f2ee381c3d  zapret_proxy.exe
