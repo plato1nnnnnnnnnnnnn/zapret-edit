@@ -26,11 +26,17 @@ jobs:
         run: |
           python -m pip install --upgrade pip
           if (Test-Path requirements.txt) { python -m pip install -r requirements.txt }
-          python -m pip install pyinstaller==5.11.0
+            python -m pip install pyinstaller==5.11.0
         shell: powershell
 
       - name: Generate PAC
         run: python src/generate_pac.py
+
+      - name: Generate icon
+        run: python src/generate_icon.py
+
+      - name: Validate icon
+        run: python src/validate_icon.py
 
       - name: Build with PyInstaller
         run: |
@@ -55,4 +61,4 @@ jobs:
           path: |
             dist/**
             build/**
-            *.exe
+            dist/zapret_proxy.exe
