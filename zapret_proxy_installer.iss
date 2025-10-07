@@ -22,7 +22,7 @@ Name: "{userstartup}\Запрет Proxy"; Filename: "{app}\zapret_proxy.exe"; Ic
 
 [Run]
 ; После установки — установить AutoConfigURL (только для текущего пользователя)
-Filename: "reg.exe"; Parameters: "add HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings /v AutoConfigURL /t REG_SZ /d \"{app}\\zapret_proxy.pac\" /f"; Flags: runhidden
+Filename: "reg.exe"; Parameters: "add HKCU\Software\Microsoft\Windows\CurrentVersion\Internet Settings /v AutoConfigURL /t REG_SZ /d ""{app}\\zapret_proxy.pac"" /f"; Flags: runhidden
 
 [UninstallRun]
 ; При удалении — удалить AutoConfigURL
