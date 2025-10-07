@@ -6,8 +6,8 @@ DefaultDirName={pf}\ZapretProxy
 DefaultGroupName=Zapret Proxy
 OutputDir=dist
 OutputBaseFilename=ZapretProxySetup
-;SetupIconFile=icon.ico
-; Временно закомментировано: Inno Setup в CI валится на некоторых форматах .ico (буду дорабатывать)
+SetupIconFile=icon.ico
+; SetupIconFile was re-enabled after validating generated icon.ico for Inno Setup compatibility
 
 [Files]
 ; PyInstaller will produce `dist\zapret_proxy.exe` with the updated spec
