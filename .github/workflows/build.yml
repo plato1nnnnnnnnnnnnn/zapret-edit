@@ -31,6 +31,11 @@ jobs:
         run: pip install Pillow
       - name: Build exe
         run: pyinstaller zapret_proxy_simple.spec
+
+      - name: Generate checksums
+        run: |
+          sha256sum dist/ZapretProxySetup.exe dist/zapret_proxy.exe > checksums.txt || true
+          cat checksums.txt || true
       - name: Upload artifact
         uses: actions/upload-artifact@v4
         with:
@@ -46,6 +51,11 @@ jobs:
         with:
           name: "Release ${{ github.run_number }}"
           tag_name: "v${{ github.run_number }}"
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload checksums to Release
+        run: |
+          gh release upload "v${{ github.run_number }}" checksums.txt --repo ${{ github.repository }} --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload artifacts to Release
@@ -89,6 +99,11 @@ jobs:
           if (Test-Path $iscc) { & $iscc zapret_proxy_installer.iss } else { Write-Error "ISCC not found at $iscc"; exit 1 }
       - name: Build exe (Windows)
         run: pyinstaller zapret_proxy_simple.spec
+
+      - name: Generate checksums
+        run: |
+          sha256sum dist/ZapretProxySetup.exe dist/zapret_proxy.exe > checksums.txt || true
+          cat checksums.txt || true
       - name: Upload Windows exe artifact
         uses: actions/upload-artifact@v4
         with:
@@ -110,5 +125,11 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: dist/ZapretProxySetup.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload checksums to Release (Windows)
+        if: runner.os == 'Windows'
+        run: |
+          gh release upload "v${{ github.run_number }}" checksums.txt --repo ${{ github.repository }} --clobber
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
