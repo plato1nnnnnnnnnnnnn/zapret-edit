@@ -2,24 +2,28 @@ from PIL import Image, ImageDraw, ImageFont
 import os
 
 def make_icon(path='icon.ico'):
-    # Создаём простую иконку 256x256 с буквой Z
-    size = (256, 256)
-    img = Image.new('RGBA', size, (28, 33, 38, 255))
+    # Генерируем иконку без альфа (RGB) и сохраняем только маленькие размеры, совместимые с Inno Setup
+    size = (128, 128)
+    bg_color = (28, 33, 38)
+    img = Image.new('RGB', size, bg_color)
     draw = ImageDraw.Draw(img)
 
     # Большая буква Z
     try:
-        font = ImageFont.truetype('DejaVuSans-Bold.ttf', 160)
+        font = ImageFont.truetype('DejaVuSans-Bold.ttf', 96)
     except Exception:
         font = ImageFont.load_default()
 
     w, h = draw.textsize('Z', font=font)
-    draw.text(((size[0]-w)/2, (size[1]-h)/2 - 10), 'Z', font=font, fill=(255, 200, 0, 255))
+    draw.text(((size[0]-w)/2, (size[1]-h)/2 - 6), 'Z', font=font, fill=(255, 200, 0))
 
-    # Сохраняем несколько размеров в .ico
-    sizes = [(256,256),(128,128),(64,64),(48,48),(32,32),(16,16)]
-    imgs = [img.resize(s, Image.LANCZOS) for s in sizes]
-    imgs[0].save(path, format='ICO', sizes=sizes)
+    # Сохраняем только размеры, которые обычно поддерживаются: 48,32,16
+    sizes = [(48,48),(32,32),(16,16)]
+    imgs = [img.resize(s, Image.LANCZOS).convert('RGB') for s in sizes]
+    # Pillow expects the largest image first when writing multiple sizes
+    imgs.insert(0, img.convert('RGB'))
+    out_sizes = [(128,128)] + sizes
+    imgs[0].save(path, format='ICO', sizes=out_sizes)
     print(f'Generated icon at {path}')
 
 if __name__ == '__main__':
