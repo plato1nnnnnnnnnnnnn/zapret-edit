@@ -23,6 +23,8 @@ jobs:
         run: pip install -r requirements.txt
       - name: Generate icon
         run: python src/generate_icon.py
+      - name: Validate icon
+        run: python src/validate_icon.py
       - name: Install PyInstaller
         run: pip install pyinstaller
       - name: Install Pillow
@@ -71,6 +73,8 @@ jobs:
         run: pip install -r requirements.txt
       - name: Generate icon
         run: python src/generate_icon.py
+      - name: Validate icon
+        run: python src/validate_icon.py
       - name: Install PyInstaller
         run: pip install pyinstaller
       - name: Install Pillow
