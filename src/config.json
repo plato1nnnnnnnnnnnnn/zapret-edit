@@ -17,5 +17,5 @@
     "vimeo",
     "tumblr"
   ],
-  "external_proxy": "http://your-external-proxy:3128"
+  "external_proxy": "http://127.0.0.1:3128"
 }

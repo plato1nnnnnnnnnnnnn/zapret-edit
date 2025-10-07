@@ -3,16 +3,15 @@
 
 a = Analysis(
     ['src/simple_app.py'],
-    pathex=[],
+    pathex=['src'],
     binaries=[],
-    datas=[],
+    datas=[('src/config.json', 'src'), ('src/zapret_proxy.pac', 'src')],
     hiddenimports=[],
     hookspath=[],
     hooksconfig={},
     runtime_hooks=[],
     excludes=[],
     noarchive=False,
-    optimize=0,
 )
 pyz = PYZ(a.pure)
 
@@ -22,7 +21,7 @@ exe = EXE(
     a.binaries,
     a.datas,
     [],
-    name='zapret_proxy_simple.exe',
+    name='zapret_proxy.exe',
     debug=False,
     bootloader_ignore_signals=False,
     strip=False,

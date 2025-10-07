@@ -1,0 +1,58 @@
+name: Build Windows exe & Installer
+
+on:
+  push:
+    branches: [ main ]
+  workflow_dispatch: {}
+
+jobs:
+  build-windows:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.11'
+
+      - name: Install Inno Setup (choco)
+        run: |
+          choco install innosetup -y
+        shell: powershell
+
+      - name: Install dependencies
+        run: |
+          python -m pip install --upgrade pip
+          if (Test-Path requirements.txt) { python -m pip install -r requirements.txt }
+          python -m pip install pyinstaller==5.11.0
+        shell: powershell
+
+      - name: Generate PAC
+        run: python src/generate_pac.py
+
+      - name: Build with PyInstaller
+        run: |
+          pyinstaller zapret_proxy_simple.spec
+        shell: powershell
+
+      - name: Build Inno Setup installer
+        run: |
+          $iscc = "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"
+          if (Test-Path $iscc) {
+            & $iscc zapret_proxy_installer.iss
+          } else {
+            Write-Error "ISCC not found at $iscc"
+            exit 1
+          }
+        shell: powershell
+
+      - name: Upload build artifacts
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-build-artifacts
+          path: |
+            dist/**
+            build/**
+            *.exe
