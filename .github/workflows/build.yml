@@ -6,6 +6,9 @@ on:
   pull_request:
     branches: [ main ]
 
+permissions:
+  contents: write
+
 jobs:
   build:
     runs-on: ubuntu-latest
@@ -18,8 +21,12 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Generate icon
+        run: python src/generate_icon.py
       - name: Install PyInstaller
         run: pip install pyinstaller
+      - name: Install Pillow
+        run: pip install Pillow
       - name: Build exe
         run: pyinstaller zapret_proxy_simple.spec
       - name: Upload artifact
@@ -39,34 +46,15 @@ jobs:
           tag_name: "v${{ github.run_number }}"
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload installer to Release
+      - name: Upload artifacts to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/ZapretProxySetup.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload exe to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: dist/zapret_proxy_simple.exe
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload config to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: src/config.json
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload icon to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: icon.ico
-        env:
-          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      - name: Upload README to Release
-        uses: softprops/action-gh-release@v1
-        with:
-          files: README.md
+          files: |
+            dist/ZapretProxySetup.exe
+            dist/zapret_proxy.exe
+            src/config.json
+            icon.ico
+            README.md
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
 
@@ -81,10 +69,20 @@ jobs:
           python-version: '3.11'
       - name: Install dependencies
         run: pip install -r requirements.txt
+      - name: Generate icon
+        run: python src/generate_icon.py
       - name: Install PyInstaller
         run: pip install pyinstaller
       - name: Install Pillow
         run: pip install Pillow
+      - name: Install Inno Setup (choco)
+        if: runner.os == 'Windows'
+        run: choco install innosetup -y
+      - name: Build Inno Setup installer
+        if: runner.os == 'Windows'
+        run: |
+          $iscc = "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"
+          if (Test-Path $iscc) { & $iscc zapret_proxy_installer.iss } else { Write-Error "ISCC not found at $iscc"; exit 1 }
       - name: Build exe (Windows)
         run: pyinstaller zapret_proxy_simple.spec
       - name: Upload Windows exe artifact
@@ -101,5 +99,12 @@ jobs:
         uses: softprops/action-gh-release@v1
         with:
           files: dist/zapret_proxy_simple.exe
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+      - name: Upload Windows installer to Release
+        if: runner.os == 'Windows'
+        uses: softprops/action-gh-release@v1
+        with:
+          files: dist/ZapretProxySetup.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
