@@ -22,6 +22,17 @@ base64 -w 0 cert.pfx > cert.pfx.base64
 Security notes:
 - Never commit the PFX or its base64 directly into the repository.
 - Use repository or organization secrets with limited access.
+
+How to add secrets using GitHub CLI:
+
+```bash
+# Add base64 encoded PFX
+gh secret set CODESIGN_PFX --body "$(cat cert.pfx.base64)" --repo $GITHUB_REPOSITORY
+# Add PFX password
+gh secret set CODESIGN_PFX_PASS --body "yourPfxPassword" --repo $GITHUB_REPOSITORY
+```
+
+Then run the manual workflow `Automated code signing (manual)` from the Actions tab and provide the artifact path (default `dist/ZapretProxySetup.exe`).
 Code signing (Windows installer)
 ================================
 
