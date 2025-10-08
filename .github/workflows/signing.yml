@@ -1,0 +1,49 @@
+name: Code signing (manual)
+
+on:
+  workflow_dispatch:
+    inputs:
+      artifact_path:
+        description: 'Path to installer to sign (relative to repo root)'
+        required: true
+        default: 'dist/ZapretProxySetup.exe'
+
+permissions:
+  contents: read
+
+jobs:
+  sign:
+    runs-on: windows-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v3
+
+      - name: Decode PFX
+        env:
+          CODESIGN_PFX: ${{ secrets.CODESIGN_PFX }}
+        run: |
+          if (-not $env:CODESIGN_PFX) { Write-Error 'CODESIGN_PFX secret not set'; exit 1 }
+          [System.IO.File]::WriteAllBytes('signing.pfx', [System.Convert]::FromBase64String($env:CODESIGN_PFX))
+        shell: powershell
+
+      - name: Ensure signtool available
+        run: |
+          Write-Host 'This job expects signtool.exe available on the runner. If missing, install Windows SDK or use a self-hosted runner.'
+        shell: powershell
+
+      - name: Sign installer
+        env:
+          CODESIGN_PFX_PASS: ${{ secrets.CODESIGN_PFX_PASS }}
+        run: |
+          $installer = '${{ github.event.inputs.artifact_path }}'
+          if (-not (Test-Path $installer)) { Write-Error "Installer not found: $installer"; exit 1 }
+          & "C:\\Program Files (x86)\\Windows Kits\\10\\bin\\x64\\signtool.exe" sign /f signing.pfx /p $env:CODESIGN_PFX_PASS /tr http://timestamp.digicert.com /td sha256 /fd sha256 $installer
+        shell: powershell
+
+      - name: Upload signed artifact
+        uses: softprops/action-gh-release@v1
+        with:
+          files: |
+            ${{ github.event.inputs.artifact_path }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
