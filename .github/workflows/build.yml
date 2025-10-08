@@ -92,13 +92,13 @@ jobs:
       - name: Install Inno Setup (choco)
         if: runner.os == 'Windows'
         run: choco install innosetup -y
+      - name: Build exe (Windows)
+        run: pyinstaller zapret_proxy_simple.spec
       - name: Build Inno Setup installer
         if: runner.os == 'Windows'
         run: |
           $iscc = "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"
           if (Test-Path $iscc) { & $iscc zapret_proxy_installer.iss } else { Write-Error "ISCC not found at $iscc"; exit 1 }
-      - name: Build exe (Windows)
-        run: pyinstaller zapret_proxy_simple.spec
 
       - name: Generate checksums
         run: |
@@ -108,16 +108,16 @@ jobs:
         uses: actions/upload-artifact@v4
         with:
           name: zapret_proxy_simple_win
-          path: dist/zapret_proxy_simple.exe
+          path: dist/zapret_proxy.exe
       - name: Upload only Windows exe as artifact
         uses: actions/upload-artifact@v4
         with:
           name: zapret_proxy_simple_exe
-          path: dist/zapret_proxy_simple.exe
+          path: dist/zapret_proxy.exe
       - name: Upload Windows exe to Release
         uses: softprops/action-gh-release@v1
         with:
-          files: dist/zapret_proxy_simple.exe
+          files: dist/zapret_proxy.exe
         env:
           GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
       - name: Upload Windows installer to Release
