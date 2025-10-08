@@ -94,6 +94,13 @@ jobs:
         run: choco install innosetup -y
       - name: Build exe (Windows)
         run: pyinstaller zapret_proxy_simple.spec
+      - name: Verify exe exists (Windows)
+        run: |
+          echo "Contents of dist/:" && ls -la dist || true
+          if [ ! -f dist/zapret_proxy.exe ]; then
+            echo "ERROR: dist/zapret_proxy.exe not found" >&2
+            exit 1
+          fi
       - name: Build Inno Setup installer
         if: runner.os == 'Windows'
         run: |

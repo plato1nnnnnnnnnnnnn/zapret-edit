@@ -43,6 +43,15 @@ jobs:
           pyinstaller zapret_proxy_simple.spec
         shell: powershell
 
+      - name: Verify exe exists
+        run: |
+          Write-Host "Contents of dist/:"; Get-ChildItem -Path dist -Recurse -Force -ErrorAction SilentlyContinue
+          if (-not (Test-Path dist\zapret_proxy.exe)) {
+            Write-Error "dist\zapret_proxy.exe not found"
+            exit 1
+          }
+        shell: powershell
+
       - name: Build Inno Setup installer
         run: |
           $iscc = "C:\\Program Files (x86)\\Inno Setup 6\\ISCC.exe"
