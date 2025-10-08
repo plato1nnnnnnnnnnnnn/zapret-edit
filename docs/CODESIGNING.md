@@ -1,3 +1,27 @@
+# Code signing guide
+
+This repository supports manual code signing of the Windows installer using a PFX certificate.
+
+Recommended secret names:
+- `CODESIGN_PFX` — base64-encoded PFX file content
+- `CODESIGN_PFX_PASS` — password for the PFX file
+
+How to prepare your PFX for GitHub Secrets (local machine):
+
+1. Encode the PFX in base64:
+
+```bash
+# replace cert.pfx with your certificate file
+base64 -w 0 cert.pfx > cert.pfx.base64
+```
+
+2. Copy the contents of `cert.pfx.base64` and add it to repository Secrets as `CODESIGN_PFX`. Add the PFX password as `CODESIGN_PFX_PASS`.
+
+3. Run the manual signing workflow `.github/workflows/signing.yml` from the Actions tab, or use the provided script to sign locally.
+
+Security notes:
+- Never commit the PFX or its base64 directly into the repository.
+- Use repository or organization secrets with limited access.
 Code signing (Windows installer)
 ================================
 
