@@ -1,3 +1,8 @@
 # Ignore build artifacts
 dist/
 build/
+ # Ignore fetched CI artifacts and temporary build outputs
+ artifacts/
+ tmp_artifacts/
+ *.zip
+ artifacts/**
